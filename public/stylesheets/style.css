@@ -1,0 +1,58 @@
+body {
+  /*  padding: 50px;
+    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  */
+}
+
+a {
+  /*  color: #00B7FF;*/
+}
+
+#header {
+  background: #589abc;
+}
+
+#header .container {
+  display: table;
+  content: " ";
+}
+
+#header .nav {
+  color: #fff;
+  padding: 5px 0 5px 0;
+}
+
+.section-header {
+  font-size: 18px;
+  margin-bottom: 25px;
+  color: #999;
+}
+
+/* Main Logo */
+
+a.main-logo {
+  display: block;
+  background: url(https://giving.kcm.org/bundles/giving/images/kcm-logo.png) no-repeat;
+  background-size: 100% 100%;
+  height: 58px;
+  width: 324px;
+  margin: 5px 0 10px 0px;
+  float:left;
+}
+
+a.main-logo-es {
+  background: url(https://giving.kcmhq.org/bundles/giving/images/kcm-logo-es.png) no-repeat;
+  background-size: 100% 100%;
+  height: 58px;
+  width: 324px;
+}
+
+h1.page-header {
+  font-family: "kepler-std-n4","kepler-std",serif;
+  font-style: normal;
+  font-weight: 400;
+  color: #2C5A6F;
+  font-size: 30px;
+  border: none;
+  margin: 30px 0 10px;
+}
