@@ -68,7 +68,7 @@ router.get('/*', function(req, res, next) {
   var parameters = false;
   if (typeof query.parameters !== 'undefined') {
     parameters = query.parameters;
-    let buff = new Buffer(parameters, 'base64');
+    var buff = new Buffer(parameters, 'base64');
     parameters = buff.toString('ascii');
   }
 
