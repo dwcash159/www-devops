@@ -88,8 +88,13 @@ router.get('/*', function(req, res, next) {
   console.log('Require Parameters: ', requireParameters);
 
   //If access denied present denied page.
-  if ( !token || !validCommand || !validStack || !validParameters) {
+  if ( !token) {
     res.status(500).render('denied', { });
+    return;
+  }
+
+  if (!validCommand || !validStack || !validParameters) {
+    res.json({success: false});
     return;
   }
 
@@ -114,7 +119,7 @@ router.get('/*', function(req, res, next) {
     });
 
 
-    res.json({success: true, test:''});
+    res.json({success: true});
     return;
   }
 
