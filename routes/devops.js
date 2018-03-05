@@ -13,9 +13,9 @@ router.get('/*', function(req, res, next) {
 
   var commands =
     [
-      { name : 'kcm.nginx_clear_cache_item', parameters: false, stacks: ['stack1'] },
-      { name : 'kcm.nginx_clear_cache',      parameters: false, stacks: ['stack1'] },
-      { name : 'system.restart_web',         parameters: false, stacks: ['stack1, stack3'] }
+      { name : 'system.nginx_clear_cache_item', requireParameters: true, stacks: ['stack1'] },
+      { name : 'system.nginx_clear_cache',      requireParameters: false, stacks: ['stack1'] },
+      { name : 'system.restart_web',            requireParameters: false, stacks: ['stack1, stack3'] }
     ];
 
   //Validate Token
@@ -29,6 +29,7 @@ router.get('/*', function(req, res, next) {
 
   var validStack = false;
   var stack;
+  var requireParameters = false;
   //Validate Command
   if (typeof pathname[1] !== 'undefined') {
     command = pathname[1];
@@ -42,7 +43,7 @@ router.get('/*', function(req, res, next) {
       {
         if (commands[i].name === pathname[1]) {
           validCommand = true;
-
+          requireParameters = commands[i].requireParameters;
           if ( commands[i].stacks.indexOf(stack) !== -1) {
             validStack = true;
           }
@@ -55,29 +56,57 @@ router.get('/*', function(req, res, next) {
     validCommand = true;
   }
 
-  var parameters;
-  if (typeof query.parameters !== 'undefined') {
-    parameters = query.parameters;
-  }
-
-  console.log(query.parameters);
-  console.log(command);
-  console.log(stack);
-  console.log(validCommand);
-  console.log(validStack);
-
-  //If access denied present denied page.
-  if ( !token || !validCommand || !validStack) {
-    res.status(500).render('denied', { });
+  if (command === 'list') {
+    res.render('devops',
+      { commands: commands
+      }
+    );
     return;
   }
 
 
+  var parameters = false;
+  if (typeof query.parameters !== 'undefined') {
+    parameters = query.parameters;
+    let buff = new Buffer(parameters, 'base64');
+    parameters = buff.toString('ascii');
+  }
+
+  var validParameters = false;
+  if (!requireParameters || requireParameters && typeof parameters === 'string') {
+    validParameters = true;
+  }
+
+  console.log('Token: ', token);
+  console.log('Stack:', stack);
+  console.log('Parameters: ', parameters);
+  console.log('Command: ', command);
+
+  console.log('Valid Stack: ', validStack);
+  console.log('Valid Command: ', validCommand);
+  console.log('Valid Parameters: ', validParameters);
+  console.log('Require Parameters: ', requireParameters);
+
+  //If access denied present denied page.
+  if ( !token || !validCommand || !validStack || validParameters) {
+    res.status(500).render('denied', { });
+    return;
+  }
+
   //get parameters if necessary
   if (validCommand && validStack) {
 
-    var cmd = 'ls -lhs';
+    var cmd;
+    if (requireParameters && validParameters) {
+      cmd = "devops -H " + stack + " " + command + ":" + parameters;
+      console.log('Valid Parameters: true');
+    }
+    else {
+      cmd = "devops -H " + stack + " " + command;
+      console.log('Valid Parameters: false');
+    }
 
+    console.log('Execute Devops Command:', cmd);
     exec(cmd, function(error, stdout, stderr) {
       // command output is in stdout
       console.log('stdout: ', stdout);
@@ -85,54 +114,15 @@ router.get('/*', function(req, res, next) {
     });
 
 
-    res.json({success: true});
+    res.json({success: true, test:''});
     return;
   }
 
   res.render('devops',
-    { commands: commands
+    {
+      commands: commands
     }
   );
-
-
-  // // load the library
-  // var SMB2 = require('smb2');
-  //
-  // // create an SMB2 instance
-  // var smb2Client = new SMB2({
-  //   share:'\\\\kcmfp1.kcmhq.org\\data',
-  //   domain:'kcmhq',
-  //   username:'999webapp2',
-  //   password:'Ri33iTfL/z'
-  // });
-  //
-  // var iframe = false;
-  // if (typeof query.iframe !== 'undefined') {
-  //   iframe = true;
-  // }
-  //
-  // if (typeof query.download !== 'undefined') {
-  //
-  //   var downloadFile = function (data) {
-  //     //specify Content will be an attachment
-  //     res.setHeader('Content-disposition', 'attachment; filename='+query.download);
-  //     res.setHeader('Content-type', 'application/octet-stream');
-  //     res.end(data);
-  //   };
-  //
-  //   smb2Client.readFile('public\\'+ pathname +'\\'+query.download, function(err,data) {console.log(err,data); downloadFile(data)})
-  // } else {
-  //
-  //   var renderPage = function (err,files) {
-  //
-  //     if(err) throw err;
-  //
-  //     res.render('beam', {type:pathname, files:files, iframe: iframe })
-  //
-  //   };
-  //
-  //   smb2Client.readdir('public\\' + pathname, function(err, files){ renderPage(err,files)});
-  // }
 
 });
 
