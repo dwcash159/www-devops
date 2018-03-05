@@ -88,7 +88,7 @@ router.get('/*', function(req, res, next) {
   console.log('Require Parameters: ', requireParameters);
 
   //If access denied present denied page.
-  if ( !token || !validCommand || !validStack || validParameters) {
+  if ( !token || !validCommand || !validStack || !validParameters) {
     res.status(500).render('denied', { });
     return;
   }
