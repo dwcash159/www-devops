@@ -15,7 +15,7 @@ router.get('/*', function(req, res, next) {
     [
       { name : 'system.nginx_clear_cache_item', requireParameters: true, stacks: ['stack1'] },
       { name : 'system.nginx_clear_cache',      requireParameters: false, stacks: ['stack1'] },
-      { name : 'system.restart_web',            requireParameters: false, stacks: ['stack1, stack3'] }
+      { name : 'system.restart_web',            requireParameters: false, stacks: ['stack1', 'stack3'] }
     ];
 
   //Validate Token
